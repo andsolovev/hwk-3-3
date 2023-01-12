@@ -16,13 +16,11 @@ fun main() {
     println()
 
     ChatService.deleteMessage(2, Message("How are you?"))
+    ChatService.deleteMessage(2, Message("Hello!"))
     ChatService.printChats()
     println()
 
-    ChatService.deleteChat(2)
+    ChatService.deleteChat(3)
     ChatService.printChats()
-
-    println()
-    println(ChatService.getChats())
 
 }
