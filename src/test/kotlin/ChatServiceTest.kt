@@ -31,7 +31,7 @@ class ChatServiceTest {
 
     @Test
     fun shouldThrowMessageNotFound() {
-        assertThrows<MessageNotFoundException> {
+        assertThrows<ChatNotFoundException> {
             val testMessage = Message("Hello!")
             ChatService.addMessage(1, testMessage)
             val result = ChatService.deleteMessage(2, testMessage)

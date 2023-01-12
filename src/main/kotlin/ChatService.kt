@@ -14,24 +14,13 @@ object ChatService {
     }
 
     fun getMessages(userId: Int, count: Int): List<Message> {
-        val chat = chats[userId] ?: throw ChatNotFoundException()
-        return chat.messages.takeLast(count).onEach { it.read = true }
-    }
-
-    fun printLastMessages() {
-        println("Последние сообщения в чатах:")
-        for ((userId, chat) in chats) {
-             println(if (chat.messages.isEmpty()) "Пользователь ID $userId: " + LastMessageResult.System("Нет сообщений")
-             else "Пользователь ID $userId: " + LastMessageResult.Result(chat.messages.last()))
-        }
+        return chats[userId].let { it ?: throw ChatNotFoundException() }
+            .messages.takeLast(count)
+            .onEach { it.read = true }
     }
 
     fun emptyChat(userId: Int) {
         chats[userId] = Chat()
-    }
-
-    fun printChats() {
-        println(chats)
     }
 
     fun getChats(): MutableMap<Int, Chat> {
@@ -40,27 +29,27 @@ object ChatService {
 
     fun deleteMessage(userId: Int, message: Message): Boolean {
         println("Удаление сообщения /$message/ в чате с пользователем ID $userId:")
-        return when {
-            chats[userId]?.messages?.contains(message) == true -> {
-                chats[userId]?.messages?.remove(message)
-                if (chats[userId]?.messages?.isEmpty() == true) {
-                    chats.remove(userId)
-                }
-                true
-            }
-            else -> throw MessageNotFoundException()
-        }
+        return chats[userId].let { it ?: throw ChatNotFoundException() }
+            .messages.remove(message)
+            .also { if (chats[userId]?.messages?.isEmpty() == true) chats.remove(userId) }
     }
 
     fun deleteChat(userId: Int): Boolean {
         println("Удаление чата cс пользователем ID $userId:")
-        return when {
-            chats.containsKey(userId) -> {
-                chats.remove(userId)
-                true
-            }
-            else -> throw ChatNotFoundException()
+        chats[userId].let { it ?: throw ChatNotFoundException() }
+        return chats.remove(userId, chats[userId])
+    }
+
+    fun printLastMessages() {
+        println("Последние сообщения в чатах:")
+        for ((userId, chat) in chats) {
+            println(if (chat.messages.isEmpty()) "Пользователь ID $userId: " + LastMessageResult.System("Нет сообщений")
+            else "Пользователь ID $userId: " + LastMessageResult.Result(chat.messages.last()))
         }
+    }
+
+    fun printChats() {
+        println(chats)
     }
 }
 
